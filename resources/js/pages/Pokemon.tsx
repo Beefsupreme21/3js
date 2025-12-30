@@ -1,33 +1,33 @@
 import { Head } from '@inertiajs/react';
 import { Canvas } from '@react-three/fiber';
-import Scene from '@/Components/Golf/Scene';
-import GolfOverlay from '@/Components/Golf/GolfOverlay';
-import { GolfProvider } from '@/Components/Golf/GolfContext';
+import Scene from '@/Components/Pokemon/Scene';
+import PokemonOverlay from '@/Components/Pokemon/PokemonOverlay';
+import { PokemonProvider } from '@/Components/Pokemon/PokemonContext';
 
-export default function Golf() {
+export default function Pokemon() {
     return (
         <>
-            <Head title="Golf Game" />
-            <GolfProvider>
+            <Head title="Pokemon Game" />
+            <PokemonProvider>
                 <div className="h-screen w-screen bg-[#0a0a0f]">
                     {/* Game UI Overlay (start screen) */}
-                    <GolfOverlay />
+                    <PokemonOverlay />
 
                     {/* R3F Canvas - Full Screen */}
                     <Canvas
                         camera={{
-                            position: [-0.5, 1.5, 3.3], // Start behind golfer
+                            position: [0, 3, 5],
                             fov: 60,
                             near: 0.1,
                             far: 200,
                         }}
                         gl={{ antialias: true }}
                     >
-                        <color attach="background" args={['#1a3a2a']} />
+                        <color attach="background" args={['#87ceeb']} />
                         <Scene />
                     </Canvas>
                 </div>
-            </GolfProvider>
+            </PokemonProvider>
         </>
     );
 }

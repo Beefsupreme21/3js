@@ -14,3 +14,7 @@ Route::get('/game', function () {
 Route::get('/golf', function () {
     return Inertia::render('Golf');
 })->name('golf');
+
+Route::get('/pokemon', function () {
+    return Inertia::render('Pokemon');
+})->name('pokemon');
