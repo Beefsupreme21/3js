@@ -1,11 +1,15 @@
 import { createContext, useContext, useState, ReactNode, useEffect, useRef, useCallback } from 'react';
 
+export type ClubType = 'wedge' | 'putter';
+
 interface Golf2ContextType {
     isGameStarted: boolean;
     startGame: () => void;
     aimAngle: number;
     power: number;
     targetPower: number;
+    club: ClubType;
+    setClub: (club: ClubType) => void;
     isCharging: boolean;
     startPowerMeter: () => void;
     stopPowerMeter: () => void;
@@ -18,13 +22,20 @@ interface Golf2ContextType {
 
 const Golf2Context = createContext<Golf2ContextType | null>(null);
 
+// Club configurations
+const CLUB_CONFIG = {
+    wedge: { launchAngle: 0.6, maxSpeed: 15 }, // High arc
+    putter: { launchAngle: 0.1, maxSpeed: 8 }, // Low, flat shot
+};
+
 export function Golf2Provider({ children }: { children: ReactNode }) {
     const [isGameStarted, setIsGameStarted] = useState(false);
     const [aimAngle, setAimAngle] = useState(0); // Angle in radians
     const [power, setPower] = useState(0);
     const [targetPower, setTargetPower] = useState(75); // Target power goal (default 75%)
+    const [club, setClub] = useState<ClubType>('wedge'); // Default to wedge
     const [isCharging, setIsCharging] = useState(false);
-    const [ballPosition, setBallPosition] = useState<[number, number, number]>([0, 0.1, 0]);
+    const [ballPosition, setBallPosition] = useState<[number, number, number]>([0, 0.1, 35]); // Spawn further south
     const [ballVelocity, setBallVelocity] = useState<[number, number, number]>([0, 0, 0]);
     const chargeStartTimeRef = useRef<number | null>(null);
     const powerRef = useRef(0);
@@ -35,11 +46,12 @@ export function Golf2Provider({ children }: { children: ReactNode }) {
     };
 
     const resetBall = () => {
-        setBallPosition([0, 0.1, 0]);
+        setBallPosition([0, 0.1, 35]); // Reset to spawn position (further south)
         setBallVelocity([0, 0, 0]);
         setPower(0);
         setAimAngle(0);
         setTargetPower(75); // Reset target power to default
+        setClub('wedge'); // Reset to wedge
     };
 
     const startPowerMeter = useCallback(() => {
@@ -59,9 +71,9 @@ export function Golf2Provider({ children }: { children: ReactNode }) {
         // Use powerRef.current to get the latest power value
         const currentPower = powerRef.current;
         if (currentPower > 0) {
-            const maxSpeed = 15; // Maximum ball speed
-            const speed = (currentPower / 100) * maxSpeed;
-            const launchAngle = 0.4; // Launch angle in radians
+            const clubConfig = CLUB_CONFIG[club];
+            const speed = (currentPower / 100) * clubConfig.maxSpeed;
+            const launchAngle = clubConfig.launchAngle;
             
             // Calculate velocity based on aim angle and power
             const vx = Math.sin(aimAngle) * speed * Math.cos(launchAngle);
@@ -69,9 +81,9 @@ export function Golf2Provider({ children }: { children: ReactNode }) {
             const vy = speed * Math.sin(launchAngle);
             
             setBallVelocity([vx, vy, vz]);
-            console.log('Ball hit!', { power: currentPower, speed, vx, vy, vz });
+            console.log('Ball hit!', { power: currentPower, club, speed, vx, vy, vz });
         }
-    }, [isCharging, aimAngle]);
+    }, [isCharging, aimAngle, club]);
 
     // Handle keyboard input
     useEffect(() => {
@@ -86,6 +98,10 @@ export function Golf2Provider({ children }: { children: ReactNode }) {
                 setTargetPower((prev) => Math.min(100, prev + 5)); // Increase target power
             } else if (e.key === 'ArrowDown') {
                 setTargetPower((prev) => Math.max(0, prev - 5)); // Decrease target power
+            } else if (e.key === '1' || e.key === 'q' || e.key === 'Q') {
+                setClub('wedge');
+            } else if (e.key === '2' || e.key === 'w' || e.key === 'W') {
+                setClub('putter');
             } else if (e.key === ' ' || e.key === 'Space') {
                 e.preventDefault();
                 startPowerMeter();
@@ -133,6 +149,8 @@ export function Golf2Provider({ children }: { children: ReactNode }) {
                 aimAngle,
                 power,
                 targetPower,
+                club,
+                setClub,
                 isCharging,
                 startPowerMeter,
                 stopPowerMeter,

@@ -22,3 +22,19 @@ Route::get('/pokemon', function () {
 Route::get('/golf2', function () {
     return Inertia::render('Golf2');
 })->name('golf2');
+
+Route::get('/golf3', function () {
+    return Inertia::render('Golf3');
+})->name('golf3');
+
+Route::get('/boat', function () {
+    return Inertia::render('Boat');
+})->name('boat');
+
+Route::get('/path', function () {
+    return Inertia::render('Path');
+})->name('path');
+
+Route::get('/path2', function () {
+    return Inertia::render('Path2');
+})->name('path2');

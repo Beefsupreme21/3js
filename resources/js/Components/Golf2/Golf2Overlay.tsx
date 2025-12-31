@@ -1,7 +1,7 @@
 import { useGolf2 } from './Golf2Context';
 
 export default function Golf2Overlay() {
-    const { isGameStarted, startGame, power, targetPower, isCharging } = useGolf2();
+    const { isGameStarted, startGame, power, targetPower, isCharging, club, setClub } = useGolf2();
 
     return (
         <>
@@ -24,7 +24,30 @@ export default function Golf2Overlay() {
 
             {isGameStarted && (
                 <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-3">
+                        {/* Club Switcher */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setClub('wedge')}
+                                className={`px-4 py-2 font-mono text-sm font-bold uppercase rounded border-2 transition-all ${
+                                    club === 'wedge'
+                                        ? 'bg-green-500/20 border-green-400 text-green-300'
+                                        : 'bg-black/50 border-white/30 text-white/60 hover:border-white/50'
+                                }`}
+                            >
+                                Wedge (1/Q)
+                            </button>
+                            <button
+                                onClick={() => setClub('putter')}
+                                className={`px-4 py-2 font-mono text-sm font-bold uppercase rounded border-2 transition-all ${
+                                    club === 'putter'
+                                        ? 'bg-green-500/20 border-green-400 text-green-300'
+                                        : 'bg-black/50 border-white/30 text-white/60 hover:border-white/50'
+                                }`}
+                            >
+                                Putter (2/W)
+                            </button>
+                        </div>
                         <div className="text-sm font-mono text-white/80">
                             {isCharging ? 'Charging...' : 'Hold SPACE to charge | Up/Down: Set target'}
                         </div>

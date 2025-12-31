@@ -13,7 +13,7 @@ export default function Golf2() {
                     <Golf2Overlay />
                     <Canvas
                         camera={{
-                            position: [0, 8, 12],
+                            position: [0, 2, 8],
                             fov: 60,
                             near: 0.1,
                             far: 200,
