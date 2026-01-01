@@ -1,35 +1,21 @@
-import { usePath2 } from '../Path2Context';
-import { useBattle } from '../Battle/BattleContext';
-import { getCharacterComponent } from '../Registry/CharacterRegistry';
-import { getEnemyComponent } from '../Registry/EnemyRegistry';
+import { useBattle } from './Battle/BattleContext';
+import { getCharacterComponent } from './Registry/CharacterRegistry';
+import { getEnemyComponent } from './Registry/EnemyRegistry';
 import { Text } from '@react-three/drei';
+import Projectile from './Battle/Projectile';
+import DamageNumber from './Battle/DamageNumber';
 
-function FightScene() {
-    const { heroes, enemies, battleStatus } = useBattle();
-    const { selectedTeam } = usePath2();
+export default function FightScene() {
+    const { heroes, enemies, battleStatus, projectiles, damageNumbers } = useBattle();
 
-    // Always show characters - use battle entities if available, otherwise use placeholders
+    // Use battle entities, or show placeholders if not initialized yet
     const displayHeroes = heroes.length > 0 
         ? heroes
-        : selectedTeam.map((type, index) => ({
-            id: `hero-${index}`,
-            characterType: type,
-            position: [-6, index * -2.5, 0] as [number, number, number],
-            isAlive: true,
-            health: 100,
-            maxHealth: 100,
-        }));
+        : [];
 
     const displayEnemies = enemies.length > 0
         ? enemies
-        : [{ 
-            id: 'enemy-0', 
-            characterType: 'zombie' as const,
-            position: [4, 0, 0] as [number, number, number],
-            isAlive: true,
-            health: 50,
-            maxHealth: 50,
-        }];
+        : [];
 
     return (
         <>
@@ -38,12 +24,11 @@ function FightScene() {
             <directionalLight position={[-5, 3, -5]} intensity={0.4} />
 
             {/* Display heroes on the left */}
-            <group position={[-6, 0, 0]}>
-                {displayHeroes.map((hero, index) => {
-                    const CharacterComponent = getCharacterComponent(hero.characterType as any);
-                    return (
-                        <group key={hero.id} position={[0, index * -2.5, 0]}>
-                            <CharacterComponent position={[0, 0, 0]} />
+            {displayHeroes.map((hero, index) => {
+                const CharacterComponent = getCharacterComponent(hero.characterType as any);
+                return (
+                    <group key={hero.id} position={hero.position}>
+                        <CharacterComponent position={[0, 0, 0]} />
                             <Text
                                 position={[0, -1.5, 0]}
                                 fontSize={0.3}
@@ -69,14 +54,12 @@ function FightScene() {
                         </group>
                     );
                 })}
-            </group>
 
             {/* Display enemies on the right */}
-            <group position={[4, 0, 0]}>
-                {displayEnemies.map((enemy, index) => {
-                    const EnemyComponent = getEnemyComponent(enemy.characterType as any);
-                    return (
-                        <group key={enemy.id} position={[0, index * -2.5, 0]}>
+            {displayEnemies.map((enemy, index) => {
+                const EnemyComponent = getEnemyComponent(enemy.characterType as any);
+                return (
+                    <group key={enemy.id} position={enemy.position}>
                             <EnemyComponent position={[0, 0, 0]} />
                             <Text
                                 position={[0, -1.5, 0]}
@@ -103,11 +86,27 @@ function FightScene() {
                         </group>
                     );
                 })}
-            </group>
+
+            {/* Display projectiles */}
+            {projectiles.map((projectile) => (
+                <Projectile
+                    key={projectile.id}
+                    from={projectile.from}
+                    to={projectile.to}
+                    type={projectile.type}
+                    onComplete={() => {}}
+                />
+            ))}
+
+            {/* Display damage numbers */}
+            {damageNumbers.map((damageNumber) => (
+                <DamageNumber
+                    key={damageNumber.id}
+                    position={damageNumber.position}
+                    damage={damageNumber.damage}
+                    onComplete={() => {}}
+                />
+            ))}
         </>
     );
-}
-
-export default function Fight() {
-    return <FightScene />;
 }

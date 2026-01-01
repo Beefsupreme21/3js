@@ -1,7 +1,6 @@
-import { useRef, useContext } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group } from 'three';
-import { Path2Context } from '../Path2Context';
 
 interface MageProps {
     position: [number, number, number];
@@ -10,8 +9,6 @@ interface MageProps {
 export default function Mage({ position }: MageProps) {
     const groupRef = useRef<Group>(null);
     const staffRef = useRef<Group>(null);
-    const path2Context = useContext(Path2Context);
-    const isSelected = path2Context?.selectedTeam.includes('mage') ?? false;
     
     // Gentle idle animation
     useFrame((state) => {
@@ -23,30 +20,9 @@ export default function Mage({ position }: MageProps) {
             staffRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 2) * 0.1;
         }
     });
-    
-    const handleClick = () => {
-        path2Context?.selectCharacter('mage');
-    };
 
     return (
-        <group 
-            ref={groupRef} 
-            position={position}
-            onClick={handleClick}
-            onPointerOver={(e) => {
-                e.stopPropagation();
-                document.body.style.cursor = 'pointer';
-            }}
-            onPointerOut={() => {
-                document.body.style.cursor = 'default';
-            }}
-        >
-            {isSelected && (
-                <mesh position={[0, 0, 0]}>
-                    <ringGeometry args={[1.2, 1.4, 32]} />
-                    <meshBasicMaterial color="#00ff00" transparent opacity={0.5} />
-                </mesh>
-            )}
+        <group ref={groupRef} position={position}>
             {/* Body/Robe */}
             <mesh position={[0, 0.2, 0]}>
                 <boxGeometry args={[0.55, 0.9, 0.4]} />

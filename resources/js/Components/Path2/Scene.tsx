@@ -17,6 +17,9 @@ export default function Scene() {
         case 'town':
             // TODO: Add Town component
             return <GameMap />;
+        case 'event':
+            // TODO: Add Event component
+            return <GameMap />;
         default:
             return <TeamSelectionScene />;
     }

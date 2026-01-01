@@ -4,11 +4,13 @@ import Scene from '@/Components/Path2/Scene';
 import { Path2Provider, usePath2 } from '@/Components/Path2/Path2Context';
 import TitleScreen from '@/Components/Path2/TitleScreen';
 import TeamSelection from '@/Components/Path2/TeamSelection';
+import { BattleProvider } from '@/Components/Path2/Battle/BattleContext';
+import BattleOverlay from '@/Components/Path2/Battle/BattleOverlay';
 
 function Path2Content() {
-    const { isGameStarted } = usePath2();
+    const { isGameStarted, currentScreen, selectedTeam } = usePath2();
     
-    return (
+    const content = (
         <div className="h-screen w-screen bg-[#0a0a0f] relative">
             <Canvas
                 orthographic
@@ -28,8 +30,20 @@ function Path2Content() {
             </Canvas>
             {!isGameStarted && <TitleScreen />}
             {!isGameStarted && <TeamSelection />}
+            {currentScreen === 'fight' && <BattleOverlay />}
         </div>
     );
+    
+    // Wrap in BattleProvider when in fight screen
+    if (currentScreen === 'fight') {
+        return (
+            <BattleProvider selectedTeam={selectedTeam} enemyTypes={['zombie']}>
+                {content}
+            </BattleProvider>
+        );
+    }
+    
+    return content;
 }
 
 export default function Path2() {

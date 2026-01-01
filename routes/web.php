@@ -38,3 +38,7 @@ Route::get('/path', function () {
 Route::get('/path2', function () {
     return Inertia::render('Path2');
 })->name('path2');
+
+Route::get('/path3', function () {
+    return Inertia::render('Path3');
+})->name('path3');

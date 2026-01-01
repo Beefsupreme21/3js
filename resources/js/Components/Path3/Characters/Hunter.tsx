@@ -1,7 +1,6 @@
-import { useRef, useContext } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group } from 'three';
-import { Path2Context } from '../Path2Context';
 
 interface HunterProps {
     position: [number, number, number];
@@ -9,8 +8,6 @@ interface HunterProps {
 
 export default function Hunter({ position }: HunterProps) {
     const groupRef = useRef<Group>(null);
-    const path2Context = useContext(Path2Context);
-    const isSelected = path2Context?.selectedTeam.includes('hunter') ?? false;
     
     // Gentle idle animation
     useFrame((state) => {
@@ -18,30 +15,9 @@ export default function Hunter({ position }: HunterProps) {
             groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime + 1) * 0.05;
         }
     });
-    
-    const handleClick = () => {
-        path2Context?.selectCharacter('hunter');
-    };
 
     return (
-        <group 
-            ref={groupRef} 
-            position={position}
-            onClick={handleClick}
-            onPointerOver={(e) => {
-                e.stopPropagation();
-                document.body.style.cursor = 'pointer';
-            }}
-            onPointerOut={() => {
-                document.body.style.cursor = 'default';
-            }}
-        >
-            {isSelected && (
-                <mesh position={[0, 0, 0]}>
-                    <ringGeometry args={[1.2, 1.4, 32]} />
-                    <meshBasicMaterial color="#00ff00" transparent opacity={0.5} />
-                </mesh>
-            )}
+        <group ref={groupRef} position={position}>
             {/* Body/Torso */}
             <mesh position={[0, 0.3, 0]}>
                 <boxGeometry args={[0.5, 0.7, 0.3]} />
